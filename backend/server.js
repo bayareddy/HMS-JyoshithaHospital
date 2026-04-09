@@ -12,8 +12,22 @@ const rolesRoutes = require('./routes/roles');
 const availabilitiesRoutes = require('./routes/availabilities');
 const shiftsRoutes = require('./routes/shifts');
 
+//For local -- starting server on port 5000
+//const app = express();
+//const PORT = process.env.PORT || 5000;
+//For local -- End
+
+// Hostinger deployment -- starting server on port 3000 and listening on all interfaces
+const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 5000;
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, "0.0.0.0", () => {
+ console.log(`Server running on port ${PORT}`);
+});
+// Hostinger deployment -- End
+
 
 // Middleware
 app.use(bodyParser.json());
