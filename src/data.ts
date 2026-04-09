@@ -64,9 +64,9 @@ export const initialRoles: Role[] = [
 ];
 
 export const initialTenants: Tenant[] = [
-  { id: 'T-01', name: 'MediCore Main', location: 'Downtown' },
-  { id: 'T-02', name: 'MediCore North', location: 'North Hills' },
-  { id: 'T-03', name: 'MediCore South', location: 'South Park' },
+  { id: 'T-01', name: 'Jyoshita Clinic Main', location: 'Downtown' },
+  { id: 'T-02', name: 'Jyoshita Clinic North', location: 'North Hills' },
+  { id: 'T-03', name: 'Jyoshita Clinic South', location: 'South Park' },
 ];
 
 export const initialQualifications: Qualification[] = [
@@ -95,11 +95,11 @@ export const initialShifts: Shift[] = [
 ];
 
 export const staffList: Staff[] = [
-  {id:'S-001',name:'Dr. Vikram Mehta',role:'Senior Consultant',department:'Cardiology',specialization:['Interventional Cardiology'],qualifications:['MBBS', 'MD'],phone:'+91 98400 11001',status:'admitted',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['7AM–3PM']}], opdWindow: '15 min', hospital: 'MediCore Main', isActive: true, availability: 'Available'},
-  {id:'S-002',name:'Dr. Sunita Kapoor',role:'Consultant',department:'Neurology',specialization:['Stroke', 'Epilepsy'],qualifications:['MBBS', 'MD'],phone:'+91 98400 11002',status:'admitted',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['8AM–4PM']}], opdWindow: '20 min', hospital: 'MediCore Main', isActive: true, availability: 'Available'},
-  {id:'S-003',name:'Dr. Ravi Singh',role:'Senior Surgeon',department:'Orthopedics',specialization:['Joint Replacement'],qualifications:['MBBS', 'MS'],phone:'+91 98400 11003',status:'scheduled',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['6AM–2PM']}], opdWindow: '', hospital: 'MediCore Main', isActive: true, availability: 'In Surgery'},
-  {id:'S-004',name:'Dr. Anita Iyer',role:'Consultant',department:'General Medicine',specialization:['Diabetes', 'Endocrinology'],qualifications:['MBBS', 'MD'],phone:'+91 98400 11004',status:'admitted',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['8AM–5PM']}], opdWindow: '10 min', hospital: 'MediCore Main', isActive: true, availability: 'Available'},
-  {id:'S-005',name:'Dr. Preethi Verma',role:'Consultant',department:'OB/GYN',specialization:['High-Risk Pregnancy'],qualifications:['MBBS', 'MD'],phone:'+91 98400 11005',status:'admitted',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['9AM–5PM']}], opdWindow: '15 min', hospital: 'MediCore Main', isActive: true, availability: 'Available'},
-  {id:'S-101',name:'Nurse Lakshmi R.',role:'Head Nurse',department:'ICU',specialization:['Critical Care'],qualifications:['BSc Nursing', 'MSc Nursing'],phone:'+91 98400 11101',status:'admitted',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['7AM–7PM']}], opdWindow: '', hospital: 'MediCore Main', isActive: true, availability: 'Available'},
-  {id:'S-102',name:'Nurse Kavya M.',role:'Staff Nurse',department:'Cardiology',specialization:['Cardiac Monitoring'],qualifications:['BSc Nursing'],phone:'+91 98400 11102',status:'admitted',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['7AM–3PM']}], opdWindow: '', hospital: 'MediCore Main', isActive: true, availability: 'Available'},
+  {id:'S-001',name:'Dr. Vikram Mehta',role:'Senior Consultant',department:'Cardiology',specialization:['Interventional Cardiology'],qualifications:['MBBS', 'MD'],phone:'+91 98400 11001',status:'admitted',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['7AM–3PM']}], opdWindow: '15 min', hospital: 'Jyoshita Clinic Main', isActive: true, availability: 'Available'},
+  {id:'S-002',name:'Dr. Sunita Kapoor',role:'Consultant',department:'Neurology',specialization:['Stroke', 'Epilepsy'],qualifications:['MBBS', 'MD'],phone:'+91 98400 11002',status:'admitted',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['8AM–4PM']}], opdWindow: '20 min', hospital: 'Jyoshita Clinic Main', isActive: true, availability: 'Available'},
+  {id:'S-003',name:'Dr. Ravi Singh',role:'Senior Surgeon',department:'Orthopedics',specialization:['Joint Replacement'],qualifications:['MBBS', 'MS'],phone:'+91 98400 11003',status:'scheduled',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['6AM–2PM']}], opdWindow: '', hospital: 'Jyoshita Clinic Main', isActive: true, availability: 'In Surgery'},
+  {id:'S-004',name:'Dr. Anita Iyer',role:'Consultant',department:'General Medicine',specialization:['Diabetes', 'Endocrinology'],qualifications:['MBBS', 'MD'],phone:'+91 98400 11004',status:'admitted',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['8AM–5PM']}], opdWindow: '10 min', hospital: 'Jyoshita Clinic Main', isActive: true, availability: 'Available'},
+  {id:'S-005',name:'Dr. Preethi Verma',role:'Consultant',department:'OB/GYN',specialization:['High-Risk Pregnancy'],qualifications:['MBBS', 'MD'],phone:'+91 98400 11005',status:'admitted',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['9AM–5PM']}], opdWindow: '15 min', hospital: 'Jyoshita Clinic Main', isActive: true, availability: 'Available'},
+  {id:'S-101',name:'Nurse Lakshmi R.',role:'Head Nurse',department:'ICU',specialization:['Critical Care'],qualifications:['BSc Nursing', 'MSc Nursing'],phone:'+91 98400 11101',status:'admitted',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['7AM–7PM']}], opdWindow: '', hospital: 'Jyoshita Clinic Main', isActive: true, availability: 'Available'},
+  {id:'S-102',name:'Nurse Kavya M.',role:'Staff Nurse',department:'Cardiology',specialization:['Cardiac Monitoring'],qualifications:['BSc Nursing'],phone:'+91 98400 11102',status:'admitted',assignedShifts:[{id:'1', days:['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'], shifts:['7AM–3PM']}], opdWindow: '', hospital: 'Jyoshita Clinic Main', isActive: true, availability: 'Available'},
 ];

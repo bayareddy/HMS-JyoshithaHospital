@@ -54,7 +54,7 @@ export function NewDoctorModal({ isOpen, onClose, onSave, departments, roles, te
       phone: formData.phone || '—',
       status: editingStaff ? editingStaff.status : 'admitted',
       assignedShifts: editingStaff ? editingStaff.assignedShifts : [],
-      hospital: formData.hospital || (tenants.length > 0 ? tenants[0].name : 'MediCore Main'),
+      hospital: formData.hospital || (tenants.length > 0 ? tenants[0].name : 'Jyoshita Clinic Main'),
       isActive: editingStaff ? editingStaff.isActive : true,
       availability: editingStaff ? editingStaff.availability : 'Available'
     };

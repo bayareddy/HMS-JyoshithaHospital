@@ -37,9 +37,20 @@ export default function App() {
   const [isDeptModalOpen, setIsDeptModalOpen] = useState(false);
   const [scheduleModalStaff, setScheduleModalStaff] = useState<StaffType | null>(null);
 
-  const handleSavePatient = (newPatient: Patient) => {
-    setPatients([newPatient, ...patients]);
-    setActiveTab('patients');
+  const handleSavePatient = async (newPatient: Patient) => {
+    try {
+      const response = await fetch('/api/patients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newPatient),
+      });
+      if (!response.ok) throw new Error('Failed to add patient');
+      const savedPatient = await response.json();
+      setPatients([savedPatient, ...patients]);
+      setActiveTab('patients');
+    } catch (error) {
+      console.error('Error adding patient:', error);
+    }
   };
 
   const handleToggleStaffStatus = (id: string) => {
@@ -50,40 +61,132 @@ export default function App() {
     setStaff(staff.filter(s => s.id !== id));
   };
 
-  const handleSaveStaff = (staffData: StaffType) => {
-    if (editingStaff) {
-      setStaff(staff.map(s => s.id === staffData.id ? staffData : s));
-    } else {
-      setStaff([staffData, ...staff]);
+  const handleSaveStaff = async (staffData: StaffType) => {
+    try {
+      const method = editingStaff ? 'PUT' : 'POST';
+      const endpoint = editingStaff ? `/api/staff/${staffData.id}` : '/api/staff';
+      const response = await fetch(endpoint, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(staffData),
+      });
+      if (!response.ok) throw new Error('Failed to save staff');
+      const savedStaff = await response.json();
+      if (editingStaff) {
+        setStaff(staff.map(s => s.id === savedStaff.id ? savedStaff : s));
+      } else {
+        setStaff([savedStaff, ...staff]);
+      }
+    } catch (error) {
+      console.error('Error saving staff:', error);
     }
   };
 
-  const handleAddDepartment = (newDept: Department) => setDepartments([...departments, newDept]);
+  const handleAddDepartment = async (newDept: Department) => {
+    try {
+      const response = await fetch('/api/departments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newDept),
+      });
+      if (!response.ok) throw new Error('Failed to add department');
+      const savedDept = await response.json();
+      setDepartments([...departments, savedDept]);
+    } catch (error) {
+      console.error('Error adding department:', error);
+    }
+  };
+
   const handleUpdateDepartment = (updatedDept: Department) => setDepartments(departments.map(d => d.id === updatedDept.id ? updatedDept : d));
   const handleDeleteDepartment = (id: string) => setDepartments(departments.filter(d => d.id !== id));
   const handleToggleDepartment = (id: string) => setDepartments(departments.map(d => d.id === id ? { ...d, isActive: d.isActive === false ? true : false } : d));
 
-  const handleAddRole = (newRole: Role) => setRoles([...roles, newRole]);
+  const handleAddRole = async (newRole: Role) => {
+    try {
+      const response = await fetch('/api/roles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newRole),
+      });
+      if (!response.ok) throw new Error('Failed to add role');
+      const savedRole = await response.json();
+      setRoles([...roles, savedRole]);
+    } catch (error) {
+      console.error('Error adding role:', error);
+    }
+  };
   const handleUpdateRole = (updatedRole: Role) => setRoles(roles.map(r => r.id === updatedRole.id ? updatedRole : r));
   const handleDeleteRole = (id: string) => setRoles(roles.filter(r => r.id !== id));
   const handleToggleRole = (id: string) => setRoles(roles.map(r => r.id === id ? { ...r, isActive: r.isActive === false ? true : false } : r));
 
-  const handleAddTenant = (newTenant: Tenant) => setTenants([...tenants, newTenant]);
+  const handleAddTenant = async (newTenant: Tenant) => {
+    try {
+      const response = await fetch('/api/tenants', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newTenant),
+      });
+      if (!response.ok) throw new Error('Failed to add tenant');
+      const savedTenant = await response.json();
+      setTenants([...tenants, savedTenant]);
+    } catch (error) {
+      console.error('Error adding tenant:', error);
+    }
+  };
   const handleUpdateTenant = (updatedTenant: Tenant) => setTenants(tenants.map(t => t.id === updatedTenant.id ? updatedTenant : t));
   const handleDeleteTenant = (id: string) => setTenants(tenants.filter(t => t.id !== id));
   const handleToggleTenant = (id: string) => setTenants(tenants.map(t => t.id === id ? { ...t, isActive: t.isActive === false ? true : false } : t));
 
-  const handleAddQualification = (newQual: Qualification) => setQualifications([...qualifications, newQual]);
+  const handleAddQualification = async (newQual: Qualification) => {
+    try {
+      const response = await fetch('/api/qualifications', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newQual),
+      });
+      if (!response.ok) throw new Error('Failed to add qualification');
+      const savedQual = await response.json();
+      setQualifications([...qualifications, savedQual]);
+    } catch (error) {
+      console.error('Error adding qualification:', error);
+    }
+  };
   const handleUpdateQualification = (updatedQual: Qualification) => setQualifications(qualifications.map(q => q.id === updatedQual.id ? updatedQual : q));
   const handleDeleteQualification = (id: string) => setQualifications(qualifications.filter(q => q.id !== id));
   const handleToggleQualification = (id: string) => setQualifications(qualifications.map(q => q.id === id ? { ...q, isActive: q.isActive === false ? true : false } : q));
 
-  const handleAddAvailability = (newAvail: Availability) => setAvailabilities([...availabilities, newAvail]);
+  const handleAddAvailability = async (newAvail: Availability) => {
+    try {
+      const response = await fetch('/api/availabilities', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newAvail),
+      });
+      if (!response.ok) throw new Error('Failed to add availability');
+      const savedAvail = await response.json();
+      setAvailabilities([...availabilities, savedAvail]);
+    } catch (error) {
+      console.error('Error adding availability:', error);
+    }
+  };
   const handleUpdateAvailability = (updatedAvail: Availability) => setAvailabilities(availabilities.map(a => a.id === updatedAvail.id ? updatedAvail : a));
   const handleDeleteAvailability = (id: string) => setAvailabilities(availabilities.filter(a => a.id !== id));
   const handleToggleAvailability = (id: string) => setAvailabilities(availabilities.map(a => a.id === id ? { ...a, isActive: a.isActive === false ? true : false } : a));
 
-  const handleAddShift = (newShift: Shift) => setShifts([...shifts, newShift]);
+  const handleAddShift = async (newShift: Shift) => {
+    try {
+      const response = await fetch('/api/shifts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newShift),
+      });
+      if (!response.ok) throw new Error('Failed to add shift');
+      const savedShift = await response.json();
+      setShifts([...shifts, savedShift]);
+    } catch (error) {
+      console.error('Error adding shift:', error);
+    }
+  };
   const handleUpdateShift = (updatedShift: Shift) => setShifts(shifts.map(s => s.id === updatedShift.id ? updatedShift : s));
   const handleDeleteShift = (id: string) => setShifts(shifts.filter(s => s.id !== id));
   const handleToggleShift = (id: string) => setShifts(shifts.map(s => s.id === id ? { ...s, isActive: s.isActive === false ? true : false } : s));

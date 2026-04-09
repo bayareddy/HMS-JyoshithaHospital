@@ -32,7 +32,7 @@ export function Sidebar({ activeTab, setActiveTab }: SidebarProps) {
           <Activity className="w-[18px] h-[18px] text-white" />
         </div>
         <div>
-          <div className="text-[14px] font-semibold leading-tight">MediCore HMS</div>
+          <div className="text-[14px] font-semibold leading-tight">Jyoshita Clinic HMS</div>
           <div className="text-[10px] text-gray-500">Hospital Management</div>
         </div>
       </div>
