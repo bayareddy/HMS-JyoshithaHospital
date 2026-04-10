@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 require('dotenv').config();
 
 const tenantsRoutes = require('./routes/tenants');
@@ -12,25 +13,12 @@ const rolesRoutes = require('./routes/roles');
 const availabilitiesRoutes = require('./routes/availabilities');
 const shiftsRoutes = require('./routes/shifts');
 
-//For local -- starting server on port 5000
-//const app = express();
-//const PORT = process.env.PORT || 5000;
-//For local -- End
-
-// Hostinger deployment -- starting server on port 3000 and listening on all interfaces
-const express = require("express");
 const app = express();
-
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, "0.0.0.0", () => {
- console.log(`Server running on port ${PORT}`);
-});
-// Hostinger deployment -- End
-
 
 // Middleware
 app.use(bodyParser.json());
+app.use(express.json());
 
 // Routes
 app.use('/api/tenants', tenantsRoutes);
@@ -43,7 +31,20 @@ app.use('/api/roles', rolesRoutes);
 app.use('/api/availabilities', availabilitiesRoutes);
 app.use('/api/shifts', shiftsRoutes);
 
+// Serve static files from the frontend build (if available)
+app.use(express.static(path.join(__dirname, '../dist')));
+
+// Fallback to index.html for SPA routing
+app.get('*', (req, res) => {
+  const indexPath = path.join(__dirname, '../dist/index.html');
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      res.status(500).send('Error loading application');
+    }
+  });
+});
+
 // Start the server
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on port ${PORT}`);
 });
