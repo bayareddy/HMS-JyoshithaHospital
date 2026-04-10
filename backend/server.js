@@ -20,6 +20,11 @@ const PORT = process.env.PORT || 3000;
 app.use(bodyParser.json());
 app.use(express.json());
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'Server is running', port: PORT });
+});
+
 // Routes
 app.use('/api/tenants', tenantsRoutes);
 app.use('/api/departments', departmentsRoutes);
@@ -30,6 +35,12 @@ app.use('/api/qualifications', qualificationsRoutes);
 app.use('/api/roles', rolesRoutes);
 app.use('/api/availabilities', availabilitiesRoutes);
 app.use('/api/shifts', shiftsRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  res.status(500).json({ error: err.message });
+});
 
 // Serve static files from the frontend build (if available)
 app.use(express.static(path.join(__dirname, '../dist')));
