@@ -42,14 +42,35 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: err.message });
 });
 
-// Serve static files from the frontend build (if available)
-app.use(express.static(path.join(__dirname, '../dist')));
+// Serve static files from the backend/server.js running in the root directory
+// The dist folder is at the root level after frontend build
+const distPath = path.join(__dirname, '../dist');
+console.log('Serving static files from:', distPath);
+console.log('Process cwd:', process.cwd());
+
+// Serve static files
+app.use(express.static(distPath, { 
+  etag: false,
+  maxAge: '1d',
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+  }
+}));
 
 // Fallback to index.html for SPA routing
 app.get('*', (req, res) => {
+  // Check if this looks like an API request that wasn't handled
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'API endpoint not found' });
+  }
+  
   const indexPath = path.join(__dirname, '../dist/index.html');
   res.sendFile(indexPath, (err) => {
     if (err) {
+      console.error('Error serving index.html:', err);
+      console.log('Tried to serve:', indexPath);
       res.status(500).send('Error loading application');
     }
   });
