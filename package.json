@@ -11,7 +11,7 @@
  "lint": "tsc --noEmit",
 
  "prestart": "npm run build && npm --prefix backend install",
- "start": "PORT=3000 node backend/server.js"
+ "start": "node backend/server.js"
  },
  "dependencies": {
  "@google/genai": "^1.29.0",
