@@ -40,9 +40,8 @@ export interface Invoice {
 }
 
 export interface Department {
-  id: string;
+  id: number;
   name: string;
-  head: string;
   description: string;
   isActive?: boolean;
 }
@@ -55,7 +54,7 @@ export interface Role {
 }
 
 export interface Tenant {
-  id: string;
+  id: number;
   name: string;
   location: string;
   isActive?: boolean;
@@ -82,6 +81,13 @@ export interface Shift {
   isActive?: boolean;
 }
 
+export interface State {
+  id: number;
+  name: string;
+  stateCode?: string;
+  isActive?: boolean;
+}
+
 export interface StaffShiftAssignment {
   id: string;
   days: string[];
@@ -89,17 +95,20 @@ export interface StaffShiftAssignment {
 }
 
 export interface Staff {
-  id: string;
+  id: number;
   name: string;
   role: string;
+  roleId?: number;
   department: string;
+  departmentId?: number;
   specialization: string[];
   qualifications: string[];
   phone: string;
-  status: 'admitted' | 'scheduled'; // Reusing badge styles
+  status: 'admitted' | 'scheduled';
   assignedShifts: StaffShiftAssignment[];
   opdWindow?: string;
   hospital: string;
+  tenant?: number;
+  tenantId?: number;
   isActive: boolean;
-  availability: string;
 }

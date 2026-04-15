@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { Department, Staff } from '../types';
+import { Department } from '../types';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (dept: Department) => void;
-  staffList: Staff[];
 }
 
-export function NewDepartmentModal({ isOpen, onClose, onSave, staffList }: ModalProps) {
-  const [formData, setFormData] = useState({ name: '', head: '', description: '' });
+export function NewDepartmentModal({ isOpen, onClose, onSave }: ModalProps) {
+  const [formData, setFormData] = useState({ name: '', description: '' });
 
   if (!isOpen) return null;
 
@@ -19,10 +18,8 @@ export function NewDepartmentModal({ isOpen, onClose, onSave, staffList }: Modal
       return;
     }
     onSave({
-      id: `D-0${Math.floor(Math.random() * 10) + 6}`,
       name: formData.name,
-      head: formData.head || 'Unassigned',
-      description: formData.description || 'No description provided.'
+      description: formData.description || ''
     });
     onClose();
   };
@@ -39,16 +36,6 @@ export function NewDepartmentModal({ isOpen, onClose, onSave, staffList }: Modal
           <div>
             <label className="block text-[11px] text-gray-500 mb-1">Department Name *</label>
             <input className="w-full p-2 border border-border-subtle rounded-md text-[12px] bg-surface2 focus:bg-white focus:border-accent outline-none" placeholder="e.g. Pediatrics" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
-          </div>
-          
-          <div>
-            <label className="block text-[11px] text-gray-500 mb-1">Head of Department</label>
-            <select className="w-full p-2 border border-border-subtle rounded-md text-[12px] bg-surface2 focus:bg-white focus:border-accent outline-none" value={formData.head} onChange={e => setFormData({...formData, head: e.target.value})}>
-              <option value="">Select Doctor</option>
-              {staffList.filter(s => s.isActive && (s.role.includes('Doctor') || s.role.includes('Consultant') || s.role.includes('Surgeon'))).map(s => (
-                <option key={s.id} value={s.name}>{s.name}</option>
-              ))}
-            </select>
           </div>
 
           <div>

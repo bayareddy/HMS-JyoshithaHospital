@@ -1,10 +1,36 @@
 const db = require('../config/db');
 
-// Get all staff
+const mapRowToStaff = (row) => ({
+  id: row.id,
+  name: row.name,
+  roleId: row.role_id,
+  role: row.role_name || 'N/A',
+  departmentId: row.department_id,
+  department: row.department_name || 'N/A',
+  phone: row.phone,
+  status: row.status,
+  opdWindow: row.opd_window,
+  tenantId: row.tenant_id,
+  tenant: row.tenant_name || 'N/A',
+  isActive: row.is_active === 1
+});
+
+// Get all staff with joined data
 const getStaff = async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM staff');
-    res.json(rows);
+    const [rows] = await db.query(`
+      SELECT 
+        s.id, s.name, s.role_id, s.department_id, s.phone, s.status, 
+        s.opd_window, s.tenant_id, s.is_active,
+        r.name as role_name,
+        d.name as department_name,
+        t.name as tenant_name
+      FROM staff s
+      LEFT JOIN roles r ON s.role_id = r.id
+      LEFT JOIN departments d ON s.department_id = d.id
+      LEFT JOIN tenants t ON s.tenant_id = t.id
+    `);
+    res.json(rows.map(mapRowToStaff));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -12,13 +38,23 @@ const getStaff = async (req, res) => {
 
 // Create a new staff member
 const createStaff = async (req, res) => {
-  const { id, name, role, department, phone, status, availability, hospital, isActive } = req.body;
+  const { name, roleId, departmentId, phone, status, opdWindow, tenantId, isActive } = req.body;
   try {
     const [result] = await db.query(
-      'INSERT INTO staff (id, name, role_id, department_id, phone, status, tenant_id, availability_id, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [id, name, role || 'Doctor', department || 'General', phone || '', status || 'admitted', hospital || 'Jyoshita Clinic Main', availability || 'Available', isActive !== false]
+      'INSERT INTO staff (name, role_id, department_id, phone, status, opd_window, tenant_id, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [name, roleId || 1, departmentId || 1, phone || '', status || 'admitted', opdWindow || '15 min', tenantId || 1, isActive !== false]
     );
-    res.status(201).json({ id, name, role, department, phone, status, availability, hospital, isActive });
+    
+    const [rows] = await db.query(`
+      SELECT s.*, r.name as role_name, d.name as department_name, t.name as tenant_name
+      FROM staff s
+      LEFT JOIN roles r ON s.role_id = r.id
+      LEFT JOIN departments d ON s.department_id = d.id
+      LEFT JOIN tenants t ON s.tenant_id = t.id
+      WHERE s.id = ?
+    `, [result.insertId]);
+    
+    res.status(201).json(mapRowToStaff(rows[0]));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -27,16 +63,43 @@ const createStaff = async (req, res) => {
 // Update a staff member
 const updateStaff = async (req, res) => {
   const { id } = req.params;
-  const { name, role, department, phone, status, availability, hospital, isActive } = req.body;
+  const { name, roleId, departmentId, phone, status, opdWindow, tenantId, isActive } = req.body;
   try {
     const [result] = await db.query(
-      'UPDATE staff SET name = ?, role_id = ?, department_id = ?, phone = ?, status = ?, availability_id = ?, tenant_id = ?, is_active = ? WHERE id = ?',
-      [name, role || 'Doctor', department || 'General', phone || '', status, availability || 'Available', hospital || 'Jyoshita Clinic Main', isActive !== false, id]
+      'UPDATE staff SET name = ?, role_id = ?, department_id = ?, phone = ?, status = ?, opd_window = ?, tenant_id = ?, is_active = ? WHERE id = ?',
+      [name, roleId || 1, departmentId || 1, phone || '', status, opdWindow || '15 min', tenantId || 1, isActive !== false, parseInt(id)]
     );
-    res.json({ id, name, role, department, phone, status, availability, hospital, isActive });
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Staff not found' });
+    }
+    
+    const [rows] = await db.query(`
+      SELECT s.*, r.name as role_name, d.name as department_name, t.name as tenant_name
+      FROM staff s
+      LEFT JOIN roles r ON s.role_id = r.id
+      LEFT JOIN departments d ON s.department_id = d.id
+      LEFT JOIN tenants t ON s.tenant_id = t.id
+      WHERE s.id = ?
+    `, [parseInt(id)]);
+    
+    res.json(mapRowToStaff(rows[0]));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-module.exports = { getStaff, createStaff, updateStaff };
+// Delete a staff member
+const deleteStaff = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const [result] = await db.query('DELETE FROM staff WHERE id = ?', [parseInt(id)]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Staff not found' });
+    }
+    res.json({ message: 'Staff deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { getStaff, createStaff, updateStaff, deleteStaff };

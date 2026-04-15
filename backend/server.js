@@ -12,6 +12,7 @@ const qualificationsRoutes = require('./routes/qualifications');
 const rolesRoutes = require('./routes/roles');
 const availabilitiesRoutes = require('./routes/availabilities');
 const shiftsRoutes = require('./routes/shifts');
+const statesRoutes = require('./routes/states');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -35,6 +36,7 @@ app.use('/api/qualifications', qualificationsRoutes);
 app.use('/api/roles', rolesRoutes);
 app.use('/api/availabilities', availabilitiesRoutes);
 app.use('/api/shifts', shiftsRoutes);
+app.use('/api/states', statesRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

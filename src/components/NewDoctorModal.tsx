@@ -21,17 +21,17 @@ export function NewDoctorModal({ isOpen, onClose, onSave, departments, roles, te
   const [newSpec, setNewSpec] = useState('');
 
   useEffect(() => {
-    if (editingStaff) {
+    if (editingStaff && isOpen) {
       setFormData({
-        name: editingStaff.name,
-        role: editingStaff.role,
-        department: editingStaff.department,
-        specialization: editingStaff.specialization,
+        name: editingStaff.name || '',
+        role: editingStaff.role || '',
+        department: editingStaff.department || '',
+        specialization: editingStaff.specialization || [],
         qualifications: editingStaff.qualifications || [],
-        phone: editingStaff.phone,
-        hospital: editingStaff.hospital
+        phone: editingStaff.phone || '',
+        hospital: editingStaff.hospital || editingStaff.tenant?.toString() || ''
       });
-    } else {
+    } else if (isOpen) {
       setFormData({ name: '', role: '', department: '', specialization: [], qualifications: [], phone: '', hospital: '' });
     }
   }, [editingStaff, isOpen]);
@@ -44,19 +44,26 @@ export function NewDoctorModal({ isOpen, onClose, onSave, departments, roles, te
       return;
     }
     
+    const selectedRole = roles.find(r => r.name === formData.role);
+    const selectedDept = departments.find(d => d.name === formData.department);
+    const selectedTenant = tenants.find(t => t.name === formData.hospital);
+    
     const newDoc: Staff = {
-      id: editingStaff ? editingStaff.id : `S-${Math.floor(Math.random() * 1000) + 200}`,
+      id: editingStaff ? editingStaff.id : 0,
       name: formData.name,
-      role: formData.role || (roles.length > 0 ? roles[0].name : 'Doctor'),
+      role: formData.role || (roles.length > 0 ? String(roles[0].id) : '1'),
+      roleId: selectedRole ? Number(selectedRole.id) : 1,
       department: formData.department,
+      departmentId: selectedDept ? Number(selectedDept.id) : 1,
       specialization: formData.specialization.length > 0 ? formData.specialization : ['General'],
       qualifications: formData.qualifications,
-      phone: formData.phone || '—',
+      phone: formData.phone || '',
       status: editingStaff ? editingStaff.status : 'admitted',
       assignedShifts: editingStaff ? editingStaff.assignedShifts : [],
-      hospital: formData.hospital || (tenants.length > 0 ? tenants[0].name : 'Jyoshita Clinic Main'),
-      isActive: editingStaff ? editingStaff.isActive : true,
-      availability: editingStaff ? editingStaff.availability : 'Available'
+      hospital: formData.hospital || (tenants.length > 0 ? String(tenants[0].id) : '1'),
+      tenant: selectedTenant ? Number(selectedTenant.id) : 1,
+      tenantId: selectedTenant ? Number(selectedTenant.id) : 1,
+      isActive: editingStaff ? editingStaff.isActive : true
     };
     
     onSave(newDoc);

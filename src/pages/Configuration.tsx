@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Department, Role, Tenant, Qualification, Availability, Shift } from '../types';
+import { Department, Role, Tenant, Qualification, Availability, Shift, State } from '../types';
 import { Building2, Shield, MapPin, Plus, Edit, Trash2, X, GraduationCap, Clock, Calendar } from 'lucide-react';
 
 interface ConfigurationProps {
@@ -9,18 +9,19 @@ interface ConfigurationProps {
   qualifications: Qualification[];
   availabilities: Availability[];
   shifts: Shift[];
+  states: State[];
   onAddDepartment: (dept: Department) => void;
   onUpdateDepartment: (dept: Department) => void;
-  onDeleteDepartment: (id: string) => void;
-  onToggleDepartment: (id: string) => void;
+  onDeleteDepartment: (id: number) => void;
+  onToggleDepartment: (id: number) => void;
   onAddRole: (role: Role) => void;
   onUpdateRole: (role: Role) => void;
   onDeleteRole: (id: string) => void;
   onToggleRole: (id: string) => void;
   onAddTenant: (tenant: Tenant) => void;
   onUpdateTenant: (tenant: Tenant) => void;
-  onDeleteTenant: (id: string) => void;
-  onToggleTenant: (id: string) => void;
+  onDeleteTenant: (id: number) => void;
+  onToggleTenant: (id: number) => void;
   onAddQualification: (qual: Qualification) => void;
   onUpdateQualification: (qual: Qualification) => void;
   onDeleteQualification: (id: string) => void;
@@ -33,47 +34,56 @@ interface ConfigurationProps {
   onUpdateShift: (shift: Shift) => void;
   onDeleteShift: (id: string) => void;
   onToggleShift: (id: string) => void;
+  onAddState: (state: State) => void;
+  onUpdateState: (state: State) => void;
+  onDeleteState: (id: number) => void;
+  onToggleState: (id: number) => void;
 }
 
 export function Configuration({ 
-  departments, roles, tenants, qualifications, availabilities, shifts,
+  departments, roles, tenants, qualifications, availabilities, shifts, states,
   onAddDepartment, onUpdateDepartment, onDeleteDepartment, onToggleDepartment,
   onAddRole, onUpdateRole, onDeleteRole, onToggleRole,
   onAddTenant, onUpdateTenant, onDeleteTenant, onToggleTenant,
   onAddQualification, onUpdateQualification, onDeleteQualification, onToggleQualification,
   onAddAvailability, onUpdateAvailability, onDeleteAvailability, onToggleAvailability,
-  onAddShift, onUpdateShift, onDeleteShift, onToggleShift
+  onAddShift, onUpdateShift, onDeleteShift, onToggleShift,
+  onAddState, onUpdateState, onDeleteState, onToggleState
 }: ConfigurationProps) {
-  const [activeSubTab, setActiveSubTab] = useState<'roles' | 'departments' | 'tenants' | 'qualifications' | 'availabilities' | 'shifts'>('roles');
+  const [activeSubTab, setActiveSubTab] = useState<'roles' | 'departments' | 'tenants' | 'qualifications' | 'availabilities' | 'shifts' | 'states'>('roles');
 
   const [newRole, setNewRole] = useState({ name: '', description: '' });
-  const [editingRoleId, setEditingRoleId] = useState<string | null>(null);
+  const [editingRoleId, setEditingRoleId] = useState<any>(null);
 
-  const [newDept, setNewDept] = useState({ name: '', head: '', description: '' });
-  const [editingDeptId, setEditingDeptId] = useState<string | null>(null);
+  const [newDept, setNewDept] = useState({ name: '', description: '' });
+  const [editingDeptId, setEditingDeptId] = useState<any>(null);
 
   const [newTenant, setNewTenant] = useState({ name: '', location: '' });
-  const [editingTenantId, setEditingTenantId] = useState<string | null>(null);
+  const [editingTenantId, setEditingTenantId] = useState<any>(null);
 
   const [newQual, setNewQual] = useState({ name: '', description: '' });
-  const [editingQualId, setEditingQualId] = useState<string | null>(null);
+  const [editingQualId, setEditingQualId] = useState<any>(null);
 
   const [newAvail, setNewAvail] = useState({ name: '', description: '' });
-  const [editingAvailId, setEditingAvailId] = useState<string | null>(null);
+  const [editingAvailId, setEditingAvailId] = useState<any>(null);
 
   const [newShift, setNewShift] = useState({ name: '', days: [] as string[] });
-  const [editingShiftId, setEditingShiftId] = useState<string | null>(null);
+  const [editingShiftId, setEditingShiftId] = useState<any>(null);
+
+  const [newState, setNewState] = useState({ name: '', stateCode: '' });
+  const [editingStateId, setEditingStateId] = useState<any>(null);
 
   const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   // --- Roles ---
   const handleSaveRole = () => {
     if (!newRole.name) return;
+    const roleData = editingRoleId ? { ...newRole, id: editingRoleId } : newRole;
     if (editingRoleId) {
-      onUpdateRole({ id: editingRoleId, ...newRole });
+      onUpdateRole(roleData as Role);
       setEditingRoleId(null);
     } else {
-      onAddRole({ id: `R-0${roles.length + 1}`, ...newRole });
+      onAddRole(roleData as Role);
     }
     setNewRole({ name: '', description: '' });
   };
@@ -91,33 +101,38 @@ export function Configuration({
   // --- Departments ---
   const handleSaveDept = () => {
     if (!newDept.name) return;
+    const existingDept = editingDeptId ? departments.find(d => d.id === editingDeptId) : null;
+    const deptData = editingDeptId 
+      ? { ...newDept, id: editingDeptId, isActive: existingDept?.isActive ?? true }
+      : newDept;
     if (editingDeptId) {
-      onUpdateDepartment({ id: editingDeptId, ...newDept });
+      onUpdateDepartment(deptData as Department);
       setEditingDeptId(null);
     } else {
-      onAddDepartment({ id: `D-0${departments.length + 1}`, ...newDept });
+      onAddDepartment(deptData as Department);
     }
-    setNewDept({ name: '', head: '', description: '' });
+    setNewDept({ name: '', description: '' });
   };
 
   const handleEditDept = (dept: Department) => {
     setEditingDeptId(dept.id);
-    setNewDept({ name: dept.name, head: dept.head, description: dept.description });
+    setNewDept({ name: dept.name, description: dept.description });
   };
 
   const cancelEditDept = () => {
     setEditingDeptId(null);
-    setNewDept({ name: '', head: '', description: '' });
+    setNewDept({ name: '', description: '' });
   };
 
   // --- Tenants ---
   const handleSaveTenant = () => {
     if (!newTenant.name) return;
+    const tenantData = editingTenantId ? { ...newTenant, id: editingTenantId } : newTenant;
     if (editingTenantId) {
-      onUpdateTenant({ id: editingTenantId, ...newTenant });
+      onUpdateTenant(tenantData as Tenant);
       setEditingTenantId(null);
     } else {
-      onAddTenant({ id: `T-0${tenants.length + 1}`, ...newTenant });
+      onAddTenant(tenantData as Tenant);
     }
     setNewTenant({ name: '', location: '' });
   };
@@ -135,11 +150,12 @@ export function Configuration({
   // --- Qualifications ---
   const handleSaveQual = () => {
     if (!newQual.name) return;
+    const qualData = editingQualId ? { ...newQual, id: editingQualId } : newQual;
     if (editingQualId) {
-      onUpdateQualification({ id: editingQualId, ...newQual });
+      onUpdateQualification(qualData as Qualification);
       setEditingQualId(null);
     } else {
-      onAddQualification({ id: `Q-0${qualifications.length + 1}`, ...newQual });
+      onAddQualification(qualData as Qualification);
     }
     setNewQual({ name: '', description: '' });
   };
@@ -157,11 +173,12 @@ export function Configuration({
   // --- Availabilities ---
   const handleSaveAvail = () => {
     if (!newAvail.name) return;
+    const availData = editingAvailId ? { ...newAvail, id: editingAvailId } : newAvail;
     if (editingAvailId) {
-      onUpdateAvailability({ id: editingAvailId, ...newAvail });
+      onUpdateAvailability(availData as Availability);
       setEditingAvailId(null);
     } else {
-      onAddAvailability({ id: `A-0${availabilities.length + 1}`, ...newAvail });
+      onAddAvailability(availData as Availability);
     }
     setNewAvail({ name: '', description: '' });
   };
@@ -179,11 +196,12 @@ export function Configuration({
   // --- Shifts ---
   const handleSaveShift = () => {
     if (!newShift.name || newShift.days.length === 0) return;
+    const shiftData = editingShiftId ? { ...newShift, id: editingShiftId } : newShift;
     if (editingShiftId) {
-      onUpdateShift({ id: editingShiftId, ...newShift });
+      onUpdateShift(shiftData as Shift);
       setEditingShiftId(null);
     } else {
-      onAddShift({ id: `SH-0${shifts.length + 1}`, ...newShift });
+      onAddShift(shiftData as Shift);
     }
     setNewShift({ name: '', days: [] });
   };
@@ -203,6 +221,29 @@ export function Configuration({
       ...prev,
       days: prev.days.includes(day) ? prev.days.filter(d => d !== day) : [...prev.days, day]
     }));
+  };
+
+  // --- States ---
+  const handleSaveState = () => {
+    if (!newState.name) return;
+    const stateData = editingStateId ? { ...newState, id: editingStateId } : newState;
+    if (editingStateId) {
+      onUpdateState(stateData as State);
+      setEditingStateId(null);
+    } else {
+      onAddState(stateData as State);
+    }
+    setNewState({ name: '', stateCode: '' });
+  };
+
+  const handleEditState = (state: State) => {
+    setEditingStateId(state.id);
+    setNewState({ name: state.name, stateCode: state.stateCode || '' });
+  };
+
+  const cancelEditState = () => {
+    setEditingStateId(null);
+    setNewState({ name: '', stateCode: '' });
   };
 
   return (
@@ -243,6 +284,12 @@ export function Configuration({
           className={`px-4 py-2 text-[13px] font-medium rounded-md transition-colors ${activeSubTab === 'shifts' ? 'bg-accent text-white' : 'bg-surface text-gray-600 hover:bg-surface2'}`}
         >
           Shifts
+        </button>
+        <button 
+          onClick={() => setActiveSubTab('states')}
+          className={`px-4 py-2 text-[13px] font-medium rounded-md transition-colors ${activeSubTab === 'states' ? 'bg-accent text-white' : 'bg-surface text-gray-600 hover:bg-surface2'}`}
+        >
+          States
         </button>
       </div>
 
@@ -285,7 +332,6 @@ export function Configuration({
             <table className="w-full text-left text-[12px] border-collapse">
               <thead>
                 <tr className="border-b border-border-subtle">
-                  <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[100px]">ID</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[200px]">Shift Name</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500">Days</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[160px]">Actions</th>
@@ -294,7 +340,6 @@ export function Configuration({
               <tbody>
                 {shifts.map(s => (
                   <tr key={s.id} className={`border-b border-border-subtle last:border-0 hover:bg-[#fafaf9] ${s.isActive === false ? 'opacity-60' : ''}`}>
-                    <td className="py-2.5 px-4 text-gray-500">{s.id}</td>
                     <td className="py-2.5 px-4 font-medium flex items-center gap-2"><Calendar className="w-3.5 h-3.5 text-accent" /> {s.name}</td>
                     <td className="py-2.5 px-4">
                       <div className="flex flex-wrap gap-1">
@@ -307,7 +352,7 @@ export function Configuration({
                           {s.isActive === false ? 'Enable' : 'Disable'}
                         </button>
                         <button onClick={() => handleEditShift(s)} className="text-accent hover:text-accent-dark p-1"><Edit className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => onDeleteShift(s.id)} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => { if (window.confirm('Are you sure you want to delete this shift?')) onDeleteShift(s.id); }} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
                   </tr>
@@ -343,7 +388,6 @@ export function Configuration({
             <table className="w-full text-left text-[12px] border-collapse">
               <thead>
                 <tr className="border-b border-border-subtle">
-                  <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[100px]">ID</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[200px]">Status</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500">Description</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[160px]">Actions</th>
@@ -352,7 +396,6 @@ export function Configuration({
               <tbody>
                 {availabilities.map(a => (
                   <tr key={a.id} className={`border-b border-border-subtle last:border-0 hover:bg-[#fafaf9] ${a.isActive === false ? 'opacity-60' : ''}`}>
-                    <td className="py-2.5 px-4 text-gray-500">{a.id}</td>
                     <td className="py-2.5 px-4 font-medium flex items-center gap-2"><Clock className="w-3.5 h-3.5 text-accent" /> {a.name}</td>
                     <td className="py-2.5 px-4">{a.description}</td>
                     <td className="py-2.5 px-4">
@@ -361,7 +404,7 @@ export function Configuration({
                           {a.isActive === false ? 'Enable' : 'Disable'}
                         </button>
                         <button onClick={() => handleEditAvail(a)} className="text-accent hover:text-accent-dark p-1"><Edit className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => onDeleteAvailability(a.id)} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => { if (window.confirm('Are you sure you want to delete this availability status?')) onDeleteAvailability(a.id); }} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
                   </tr>
@@ -397,7 +440,6 @@ export function Configuration({
             <table className="w-full text-left text-[12px] border-collapse">
               <thead>
                 <tr className="border-b border-border-subtle">
-                  <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[100px]">ID</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[200px]">Role Name</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500">Description</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[160px]">Actions</th>
@@ -406,7 +448,6 @@ export function Configuration({
               <tbody>
                 {roles.map(r => (
                   <tr key={r.id} className={`border-b border-border-subtle last:border-0 hover:bg-[#fafaf9] ${r.isActive === false ? 'opacity-60' : ''}`}>
-                    <td className="py-2.5 px-4 text-gray-500">{r.id}</td>
                     <td className="py-2.5 px-4 font-medium flex items-center gap-2"><Shield className="w-3.5 h-3.5 text-accent" /> {r.name}</td>
                     <td className="py-2.5 px-4">{r.description}</td>
                     <td className="py-2.5 px-4">
@@ -415,7 +456,7 @@ export function Configuration({
                           {r.isActive === false ? 'Enable' : 'Disable'}
                         </button>
                         <button onClick={() => handleEditRole(r)} className="text-accent hover:text-accent-dark p-1"><Edit className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => onDeleteRole(r.id)} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => { if (window.confirm('Are you sure you want to delete this role?')) onDeleteRole(r.id); }} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
                   </tr>
@@ -431,10 +472,6 @@ export function Configuration({
               <div className="flex-1">
                 <label className="block text-[11px] text-gray-500 mb-1">Dept Name</label>
                 <input className="w-full p-2 border border-border-subtle rounded-md text-[12px] focus:border-accent outline-none" placeholder="e.g. Pediatrics" value={newDept.name} onChange={e => setNewDept({...newDept, name: e.target.value})} />
-              </div>
-              <div className="flex-1">
-                <label className="block text-[11px] text-gray-500 mb-1">Head</label>
-                <input className="w-full p-2 border border-border-subtle rounded-md text-[12px] focus:border-accent outline-none" placeholder="e.g. Dr. Smith" value={newDept.head} onChange={e => setNewDept({...newDept, head: e.target.value})} />
               </div>
               <div className="flex-[2]">
                 <label className="block text-[11px] text-gray-500 mb-1">Description</label>
@@ -455,9 +492,7 @@ export function Configuration({
             <table className="w-full text-left text-[12px] border-collapse">
               <thead>
                 <tr className="border-b border-border-subtle">
-                  <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[100px]">ID</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[200px]">Department</th>
-                  <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[200px]">Head</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500">Description</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[160px]">Actions</th>
                 </tr>
@@ -465,9 +500,7 @@ export function Configuration({
               <tbody>
                 {departments.map(d => (
                   <tr key={d.id} className={`border-b border-border-subtle last:border-0 hover:bg-[#fafaf9] ${d.isActive === false ? 'opacity-60' : ''}`}>
-                    <td className="py-2.5 px-4 text-gray-500">{d.id}</td>
                     <td className="py-2.5 px-4 font-medium flex items-center gap-2"><Building2 className="w-3.5 h-3.5 text-accent" /> {d.name}</td>
-                    <td className="py-2.5 px-4">{d.head}</td>
                     <td className="py-2.5 px-4">{d.description}</td>
                     <td className="py-2.5 px-4">
                       <div className="flex items-center gap-2">
@@ -475,7 +508,7 @@ export function Configuration({
                           {d.isActive === false ? 'Enable' : 'Disable'}
                         </button>
                         <button onClick={() => handleEditDept(d)} className="text-accent hover:text-accent-dark p-1"><Edit className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => onDeleteDepartment(d.id)} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => { if (window.confirm('Are you sure you want to delete this department?')) onDeleteDepartment(d.id); }} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
                   </tr>
@@ -511,7 +544,6 @@ export function Configuration({
             <table className="w-full text-left text-[12px] border-collapse">
               <thead>
                 <tr className="border-b border-border-subtle">
-                  <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[100px]">ID</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[250px]">Hospital Name</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500">Location</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[160px]">Actions</th>
@@ -520,7 +552,6 @@ export function Configuration({
               <tbody>
                 {tenants.map(t => (
                   <tr key={t.id} className={`border-b border-border-subtle last:border-0 hover:bg-[#fafaf9] ${t.isActive === false ? 'opacity-60' : ''}`}>
-                    <td className="py-2.5 px-4 text-gray-500">{t.id}</td>
                     <td className="py-2.5 px-4 font-medium flex items-center gap-2"><MapPin className="w-3.5 h-3.5 text-accent" /> {t.name}</td>
                     <td className="py-2.5 px-4">{t.location}</td>
                     <td className="py-2.5 px-4">
@@ -529,7 +560,7 @@ export function Configuration({
                           {t.isActive === false ? 'Enable' : 'Disable'}
                         </button>
                         <button onClick={() => handleEditTenant(t)} className="text-accent hover:text-accent-dark p-1"><Edit className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => onDeleteTenant(t.id)} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => { if (window.confirm('Are you sure you want to delete this hospital?')) onDeleteTenant(t.id); }} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
                   </tr>
@@ -565,7 +596,6 @@ export function Configuration({
             <table className="w-full text-left text-[12px] border-collapse">
               <thead>
                 <tr className="border-b border-border-subtle">
-                  <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[100px]">ID</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[200px]">Qualification Name</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500">Description</th>
                   <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[160px]">Actions</th>
@@ -574,7 +604,6 @@ export function Configuration({
               <tbody>
                 {qualifications.map(q => (
                   <tr key={q.id} className={`border-b border-border-subtle last:border-0 hover:bg-[#fafaf9] ${q.isActive === false ? 'opacity-60' : ''}`}>
-                    <td className="py-2.5 px-4 text-gray-500">{q.id}</td>
                     <td className="py-2.5 px-4 font-medium flex items-center gap-2"><GraduationCap className="w-3.5 h-3.5 text-accent" /> {q.name}</td>
                     <td className="py-2.5 px-4">{q.description}</td>
                     <td className="py-2.5 px-4">
@@ -583,7 +612,59 @@ export function Configuration({
                           {q.isActive === false ? 'Enable' : 'Disable'}
                         </button>
                         <button onClick={() => handleEditQual(q)} className="text-accent hover:text-accent-dark p-1"><Edit className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => onDeleteQualification(q.id)} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => { if (window.confirm('Are you sure you want to delete this qualification?')) onDeleteQualification(q.id); }} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {activeSubTab === 'states' && (
+          <div>
+            <div className="p-4 border-b border-border-subtle bg-surface2 flex gap-3 items-end">
+              <div className="flex-1">
+                <label className="block text-[11px] text-gray-500 mb-1">State Name</label>
+                <input className="w-full p-2 border border-border-subtle rounded-md text-[12px] focus:border-accent outline-none" placeholder="e.g. Telangana" value={newState.name} onChange={e => setNewState({...newState, name: e.target.value})} />
+              </div>
+              <div className="flex-1">
+                <label className="block text-[11px] text-gray-500 mb-1">State Code</label>
+                <input className="w-full p-2 border border-border-subtle rounded-md text-[12px] focus:border-accent outline-none" placeholder="e.g. TS" value={newState.stateCode} onChange={e => setNewState({...newState, stateCode: e.target.value})} />
+              </div>
+              <div className="flex gap-2">
+                {editingStateId && (
+                  <button onClick={cancelEditState} className="px-3 py-2 bg-surface text-gray-600 border border-border-subtle rounded-md text-[12px] font-medium hover:bg-surface2 flex items-center gap-1.5 h-[34px]">
+                    <X className="w-3.5 h-3.5" /> Cancel
+                  </button>
+                )}
+                <button onClick={handleSaveState} className="px-4 py-2 bg-accent text-white rounded-md text-[12px] font-medium hover:bg-accent-dark flex items-center gap-1.5 h-[34px]">
+                  {editingStateId ? <Edit className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />} 
+                  {editingStateId ? 'Update' : 'Add'}
+                </button>
+              </div>
+            </div>
+            <table className="w-full text-left text-[12px] border-collapse">
+              <thead>
+                <tr className="border-b border-border-subtle">
+                  <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[200px]">State Name</th>
+                  <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500">State Code</th>
+                  <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[160px]">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {states.map(s => (
+                  <tr key={s.id} className={`border-b border-border-subtle last:border-0 hover:bg-[#fafaf9] ${s.isActive === false ? 'opacity-60' : ''}`}>
+                    <td className="py-2.5 px-4 font-medium">{s.name}</td>
+                    <td className="py-2.5 px-4">{s.stateCode || '-'}</td>
+                    <td className="py-2.5 px-4">
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => onToggleState(s.id)} className={`text-[10px] px-2 py-1 rounded border ${s.isActive === false ? 'border-accent text-accent bg-accent/10' : 'border-border-subtle text-gray-600 hover:bg-surface2'}`}>
+                          {s.isActive === false ? 'Enable' : 'Disable'}
+                        </button>
+                        <button onClick={() => handleEditState(s)} className="text-accent hover:text-accent-dark p-1"><Edit className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => { if (window.confirm('Are you sure you want to delete this state?')) onDeleteState(s.id); }} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
                   </tr>

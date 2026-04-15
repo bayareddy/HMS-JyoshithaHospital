@@ -47,51 +47,51 @@ export const invoices: Invoice[] = [
 ];
 
 export const initialDepartments: Department[] = [
-  { id: 'D-01', name: 'Cardiology', head: 'Dr. Vikram Mehta', description: 'Deals with disorders of the heart as well as some parts of the circulatory system.' },
-  { id: 'D-02', name: 'Neurology', head: 'Dr. Sunita Kapoor', description: 'Deals with disorders of the nervous system, including the brain and spinal cord.' },
-  { id: 'D-03', name: 'Orthopedics', head: 'Dr. Ravi Singh', description: 'Focuses on injuries and diseases of your body\'s musculoskeletal system.' },
-  { id: 'D-04', name: 'General Medicine', head: 'Dr. Anita Iyer', description: 'Prevention, diagnosis, and treatment of adult diseases.' },
-  { id: 'D-05', name: 'OB/GYN', head: 'Dr. Preethi Verma', description: 'Obstetrics and gynecology, dealing with female reproductive health.' },
-  { id: 'D-06', name: 'ICU', head: 'Nurse Lakshmi R.', description: 'Intensive care unit providing critical care and life support.' },
+  { id: 1, name: 'Cardiology', description: 'Deals with disorders of the heart as well as some parts of the circulatory system.' },
+  { id: 2, name: 'Neurology', description: 'Deals with disorders of the nervous system, including the brain and spinal cord.' },
+  { id: 3, name: 'Orthopedics', description: 'Focuses on injuries and diseases of your body\'s musculoskeletal system.' },
+  { id: 4, name: 'General Medicine', description: 'Prevention, diagnosis, and treatment of adult diseases.' },
+  { id: 5, name: 'OB/GYN', description: 'Obstetrics and gynecology, dealing with female reproductive health.' },
+  { id: 6, name: 'ICU', description: 'Intensive care unit providing critical care and life support.' },
 ];
 
 export const initialRoles: Role[] = [
-  { id: 'R-01', name: 'Doctor', description: 'General Medical Practitioner' },
-  { id: 'R-02', name: 'Senior Consultant', description: 'Senior Specialist' },
-  { id: 'R-03', name: 'Surgeon', description: 'Surgical Specialist' },
-  { id: 'R-04', name: 'Head Nurse', description: 'Nursing Department Head' },
-  { id: 'R-05', name: 'Staff Nurse', description: 'General Nursing Staff' },
+  { id: 1, name: 'Doctor', description: 'General Medical Practitioner' },
+  { id: 2, name: 'Senior Consultant', description: 'Senior Specialist' },
+  { id: 3, name: 'Surgeon', description: 'Surgical Specialist' },
+  { id: 4, name: 'Head Nurse', description: 'Nursing Department Head' },
+  { id: 5, name: 'Staff Nurse', description: 'General Nursing Staff' },
 ];
 
 export const initialTenants: Tenant[] = [
-  { id: 'T-01', name: 'Jyoshita Clinic Main', location: 'Downtown' },
-  { id: 'T-02', name: 'Jyoshita Clinic North', location: 'North Hills' },
-  { id: 'T-03', name: 'Jyoshita Clinic South', location: 'South Park' },
+  { id: 1, name: 'Jyoshita Clinic Main', location: 'Downtown' },
+  { id: 2, name: 'Jyoshita Clinic North', location: 'North Hills' },
+  { id: 3, name: 'Jyoshita Clinic South', location: 'South Park' },
 ];
 
 export const initialQualifications: Qualification[] = [
-  { id: 'Q-01', name: 'MBBS', description: 'Bachelor of Medicine, Bachelor of Surgery' },
-  { id: 'Q-02', name: 'MD', description: 'Doctor of Medicine' },
-  { id: 'Q-03', name: 'MS', description: 'Master of Surgery' },
-  { id: 'Q-04', name: 'BSc Nursing', description: 'Bachelor of Science in Nursing' },
-  { id: 'Q-05', name: 'MSc Nursing', description: 'Master of Science in Nursing' },
+  { id: 1, name: 'MBBS', description: 'Bachelor of Medicine, Bachelor of Surgery' },
+  { id: 2, name: 'MD', description: 'Doctor of Medicine' },
+  { id: 3, name: 'MS', description: 'Master of Surgery' },
+  { id: 4, name: 'BSc Nursing', description: 'Bachelor of Science in Nursing' },
+  { id: 5, name: 'MSc Nursing', description: 'Master of Science in Nursing' },
 ];
 
 export const initialAvailabilities: Availability[] = [
-  { id: 'A-01', name: 'Available', description: 'Doctor is available for consultation' },
-  { id: 'A-02', name: 'In Surgery', description: 'Doctor is currently in surgery' },
-  { id: 'A-03', name: 'On Leave', description: 'Doctor is on leave' },
-  { id: 'A-04', name: 'Off Duty', description: 'Doctor is off duty' },
-  { id: 'A-05', name: 'OPD', description: 'Outpatient Department' },
+  { id: 1, name: 'Available', description: 'Doctor is available for consultation' },
+  { id: 2, name: 'In Surgery', description: 'Doctor is currently in surgery' },
+  { id: 3, name: 'On Leave', description: 'Doctor is on leave' },
+  { id: 4, name: 'Off Duty', description: 'Doctor is off duty' },
+  { id: 5, name: 'OPD', description: 'Outpatient Department' },
 ];
 
 export const initialShifts: Shift[] = [
-  { id: 'SH-01', name: '9AM–5PM', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] },
-  { id: 'SH-02', name: '7AM–3PM', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] },
-  { id: 'SH-03', name: '8AM–4PM', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] },
-  { id: 'SH-04', name: '6AM–2PM', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] },
-  { id: 'SH-05', name: '2PM–10PM', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] },
-  { id: 'SH-06', name: 'Night Shift', days: ['Saturday', 'Sunday'] },
+  { id: 1, name: '9AM–5PM', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] },
+  { id: 2, name: '7AM–3PM', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] },
+  { id: 3, name: '8AM–4PM', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] },
+  { id: 4, name: '6AM–2PM', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] },
+  { id: 5, name: '2PM–10PM', days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] },
+  { id: 6, name: 'Night Shift', days: ['Saturday', 'Sunday'] },
 ];
 
 export const staffList: Staff[] = [
