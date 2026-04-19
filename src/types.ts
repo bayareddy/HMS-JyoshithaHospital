@@ -9,6 +9,17 @@ export interface Patient {
   blood: string;
   status: 'admitted' | 'critical' | 'stable' | 'discharged' | 'scheduled';
   date: string;
+  phoneNo?: string;
+  emergencyContact?: string;
+  allergies?: string;
+  relationshipType?: string;
+  relationship?: string;
+  whatsappNo?: string;
+  emailId?: string;
+  address?: string;
+  pinCode?: number;
+  city?: string;
+  stateId?: number;
 }
 
 export interface Medication {
@@ -78,6 +89,13 @@ export interface Shift {
   id: string;
   name: string;
   days: string[];
+  isActive?: boolean;
+}
+
+export interface Reason {
+  id: number;
+  name: string;
+  description?: string;
   isActive?: boolean;
 }
 

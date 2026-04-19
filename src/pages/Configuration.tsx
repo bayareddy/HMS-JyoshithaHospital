@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Department, Role, Tenant, Qualification, Availability, Shift, State } from '../types';
-import { Building2, Shield, MapPin, Plus, Edit, Trash2, X, GraduationCap, Clock, Calendar } from 'lucide-react';
+import { Department, Role, Tenant, Qualification, Availability, Shift, State, Reason } from '../types';
+import { Building2, Shield, MapPin, Plus, Edit, Trash2, X, GraduationCap, Clock, Calendar, List } from 'lucide-react';
 
 interface ConfigurationProps {
   departments: Department[];
@@ -10,6 +10,7 @@ interface ConfigurationProps {
   availabilities: Availability[];
   shifts: Shift[];
   states: State[];
+  reasons: Reason[];
   onAddDepartment: (dept: Department) => void;
   onUpdateDepartment: (dept: Department) => void;
   onDeleteDepartment: (id: number) => void;
@@ -38,19 +39,24 @@ interface ConfigurationProps {
   onUpdateState: (state: State) => void;
   onDeleteState: (id: number) => void;
   onToggleState: (id: number) => void;
+  onAddReason: (reason: Reason) => void;
+  onUpdateReason: (reason: Reason) => void;
+  onDeleteReason: (id: number) => void;
+  onToggleReason: (id: number) => void;
 }
 
 export function Configuration({ 
-  departments, roles, tenants, qualifications, availabilities, shifts, states,
+  departments, roles, tenants, qualifications, availabilities, shifts, states, reasons,
   onAddDepartment, onUpdateDepartment, onDeleteDepartment, onToggleDepartment,
   onAddRole, onUpdateRole, onDeleteRole, onToggleRole,
   onAddTenant, onUpdateTenant, onDeleteTenant, onToggleTenant,
   onAddQualification, onUpdateQualification, onDeleteQualification, onToggleQualification,
   onAddAvailability, onUpdateAvailability, onDeleteAvailability, onToggleAvailability,
   onAddShift, onUpdateShift, onDeleteShift, onToggleShift,
-  onAddState, onUpdateState, onDeleteState, onToggleState
+  onAddState, onUpdateState, onDeleteState, onToggleState,
+  onAddReason, onUpdateReason, onDeleteReason, onToggleReason
 }: ConfigurationProps) {
-  const [activeSubTab, setActiveSubTab] = useState<'roles' | 'departments' | 'tenants' | 'qualifications' | 'availabilities' | 'shifts' | 'states'>('roles');
+  const [activeSubTab, setActiveSubTab] = useState<'roles' | 'departments' | 'tenants' | 'qualifications' | 'availabilities' | 'shifts' | 'states' | 'reasons'>('roles');
 
   const [newRole, setNewRole] = useState({ name: '', description: '' });
   const [editingRoleId, setEditingRoleId] = useState<any>(null);
@@ -72,6 +78,9 @@ export function Configuration({
 
   const [newState, setNewState] = useState({ name: '', stateCode: '' });
   const [editingStateId, setEditingStateId] = useState<any>(null);
+
+  const [newReason, setNewReason] = useState({ name: '', description: '' });
+  const [editingReasonId, setEditingReasonId] = useState<any>(null);
 
   const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -246,6 +255,36 @@ export function Configuration({
     setNewState({ name: '', stateCode: '' });
   };
 
+  // --- Reasons ---
+  const handleSaveReason = () => {
+    if (!newReason.name) return;
+    const reasonData = editingReasonId ? { ...newReason, id: editingReasonId } : newReason;
+    if (editingReasonId) {
+      onUpdateReason(reasonData as Reason);
+      setEditingReasonId(null);
+    } else {
+      onAddReason(reasonData as Reason);
+    }
+    setNewReason({ name: '', description: '' });
+  };
+
+  const handleEditReason = (reason: Reason) => {
+    setEditingReasonId(reason.id);
+    setNewReason({ name: reason.name, description: reason.description || '' });
+  };
+
+  const cancelEditReason = () => {
+    setEditingReasonId(null);
+    setNewReason({ name: '', description: '' });
+  };
+
+  const handleToggleReason = (id: number) => {
+    const reason = reasons.find(r => r.id === id);
+    if (reason) {
+      onUpdateReason({ ...reason, isActive: !reason.isActive });
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex gap-2 border-b border-border-subtle pb-2">
@@ -285,12 +324,18 @@ export function Configuration({
         >
           Shifts
         </button>
-        <button 
-          onClick={() => setActiveSubTab('states')}
-          className={`px-4 py-2 text-[13px] font-medium rounded-md transition-colors ${activeSubTab === 'states' ? 'bg-accent text-white' : 'bg-surface text-gray-600 hover:bg-surface2'}`}
-        >
-          States
-        </button>
+         <button 
+           onClick={() => setActiveSubTab('states')}
+           className={`px-4 py-2 text-[13px] font-medium rounded-md transition-colors ${activeSubTab === 'states' ? 'bg-accent text-white' : 'bg-surface text-gray-600 hover:bg-surface2'}`}
+         >
+           States
+         </button>
+         <button 
+           onClick={() => setActiveSubTab('reasons')}
+           className={`px-4 py-2 text-[13px] font-medium rounded-md transition-colors ${activeSubTab === 'reasons' ? 'bg-accent text-white' : 'bg-surface text-gray-600 hover:bg-surface2'}`}
+         >
+           Reasons
+         </button>
       </div>
 
       <div className="bg-surface border border-border-subtle rounded-xl overflow-hidden">
@@ -665,6 +710,58 @@ export function Configuration({
                         </button>
                         <button onClick={() => handleEditState(s)} className="text-accent hover:text-accent-dark p-1"><Edit className="w-3.5 h-3.5" /></button>
                         <button onClick={() => { if (window.confirm('Are you sure you want to delete this state?')) onDeleteState(s.id); }} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {activeSubTab === 'reasons' && (
+          <div>
+            <div className="p-4 border-b border-border-subtle bg-surface2 flex gap-3 items-end">
+              <div className="flex-1">
+                <label className="block text-[11px] text-gray-500 mb-1">Reason Name</label>
+                <input className="w-full p-2 border border-border-subtle rounded-md text-[12px] focus:border-accent outline-none" placeholder="e.g. Consultation" value={newReason.name} onChange={e => setNewReason({...newReason, name: e.target.value})} />
+              </div>
+              <div className="flex-[2]">
+                <label className="block text-[11px] text-gray-500 mb-1">Description</label>
+                <input className="w-full p-2 border border-border-subtle rounded-md text-[12px] focus:border-accent outline-none" placeholder="Description..." value={newReason.description} onChange={e => setNewReason({...newReason, description: e.target.value})} />
+              </div>
+              <div className="flex gap-2">
+                {editingReasonId && (
+                  <button onClick={cancelEditReason} className="px-3 py-2 bg-surface text-gray-600 border border-border-subtle rounded-md text-[12px] font-medium hover:bg-surface2 flex items-center gap-1.5 h-[34px]">
+                    <X className="w-3.5 h-3.5" /> Cancel
+                  </button>
+                )}
+                <button onClick={handleSaveReason} className="px-4 py-2 bg-accent text-white rounded-md text-[12px] font-medium hover:bg-accent-dark flex items-center gap-1.5 h-[34px]">
+                  {editingReasonId ? <Edit className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />} 
+                  {editingReasonId ? 'Update' : 'Add'}
+                </button>
+              </div>
+            </div>
+            <table className="w-full text-left text-[12px] border-collapse">
+              <thead>
+                <tr className="border-b border-border-subtle">
+                  <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[200px]">Reason</th>
+                  <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500">Description</th>
+                  <th className="py-2.5 px-4 font-medium text-[11px] text-gray-500 w-[160px]">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reasons.map(r => (
+                  <tr key={r.id} className={`border-b border-border-subtle last:border-0 hover:bg-[#fafaf9] ${r.isActive === false ? 'opacity-60' : ''}`}>
+                    <td className="py-2.5 px-4 font-medium flex items-center gap-2"><List className="w-3.5 h-3.5 text-accent" /> {r.name}</td>
+                    <td className="py-2.5 px-4">{r.description}</td>
+                    <td className="py-2.5 px-4">
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => onToggleReason(r.id)} className={`text-[10px] px-2 py-1 rounded border ${r.isActive === false ? 'border-accent text-accent bg-accent/10' : 'border-border-subtle text-gray-600 hover:bg-surface2'}`}>
+                          {r.isActive === false ? 'Enable' : 'Disable'}
+                        </button>
+                        <button onClick={() => handleEditReason(r)} className="text-accent hover:text-accent-dark p-1"><Edit className="w-3.5 h-3.5" /></button>
+                        <button onClick={() => { if (window.confirm('Are you sure you want to delete this reason?')) onDeleteReason(r.id); }} className="text-danger hover:text-red-700 p-1"><Trash2 className="w-3.5 h-3.5" /></button>
                       </div>
                     </td>
                   </tr>

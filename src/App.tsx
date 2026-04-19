@@ -16,15 +16,16 @@ import { Departments } from './pages/Departments';
 import { Schedules } from './pages/Schedules';
 import { Reports } from './pages/Reports';
 import { Configuration } from './pages/Configuration';
-import { initialPatients, staffList, initialDepartments, initialTenants, initialQualifications, initialAvailabilities, initialShifts } from './data';
-import { Patient, Staff as StaffType, Department, Role, Tenant, Qualification, Availability, Shift, State } from './types';
+import { staffList, initialDepartments, initialTenants, initialQualifications, initialAvailabilities, initialShifts } from './data';
+import { Patient, Staff as StaffType, Department, Role, Tenant, Qualification, Availability, Shift, State, Reason } from './types';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [patients, setPatients] = useState<Patient[]>(initialPatients);
+  const [patients, setPatients] = useState<Patient[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [appointments, setAppointments] = useState<any[]>([]);
   
   const [staff, setStaff] = useState<StaffType[]>(staffList);
   const [departments, setDepartments] = useState<Department[]>(initialDepartments);
@@ -34,6 +35,7 @@ export default function App() {
   const [availabilities, setAvailabilities] = useState<Availability[]>(initialAvailabilities);
   const [shifts, setShifts] = useState<Shift[]>(initialShifts);
   const [states, setStates] = useState<State[]>([]);
+  const [reasons, setReasons] = useState<Reason[]>([]);
   const [isDoctorModalOpen, setIsDoctorModalOpen] = useState(false);
   const [editingStaff, setEditingStaff] = useState<StaffType | null>(null);
   const [isDeptModalOpen, setIsDeptModalOpen] = useState(false);
@@ -90,29 +92,84 @@ export default function App() {
         console.error('Error fetching states:', error);
       }
     };
+    const fetchReasons = async () => {
+      try {
+        const response = await fetch('/api/reasons');
+        if (!response.ok) throw new Error('Failed to fetch reasons');
+        const data = await response.json();
+        setReasons(data);
+      } catch (error) {
+        console.error('Error fetching reasons:', error);
+      }
+    };
+    const fetchPatients = async () => {
+      try {
+        const response = await fetch('/api/patients');
+        if (!response.ok) throw new Error('Failed to fetch patients');
+        const data = await response.json();
+        setPatients(data);
+      } catch (error) {
+        console.error('Error fetching patients:', error);
+      }
+    };
+    const fetchAppointments = async () => {
+      try {
+        const response = await fetch('/api/appointments');
+        if (!response.ok) throw new Error('Failed to fetch appointments');
+        const data = await response.json();
+        setAppointments(data);
+      } catch (error) {
+        console.error('Error fetching appointments:', error);
+      }
+    };
     fetchRoles();
     fetchDepartments();
     fetchStaff();
     fetchTenants();
     fetchStates();
+    fetchReasons();
+    fetchPatients();
+    fetchAppointments();
     fetchTenants();
   }, []);
 
-  const handleSavePatient = useCallback(async (newPatient: Patient) => {
-    try {
-      const response = await fetch('/api/patients', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newPatient),
-      });
-      if (!response.ok) throw new Error('Failed to add patient');
-      const savedPatient = await response.json();
-      setPatients(prev => [savedPatient, ...prev]);
-      setActiveTab('patients');
-    } catch (error) {
-      console.error('Error adding patient:', error);
-    }
-  }, []);
+   const handleSavePatient = useCallback(async (newPatient: Patient) => {
+     try {
+       const response = await fetch('/api/patients', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(newPatient),
+       });
+       if (!response.ok) throw new Error('Failed to add patient');
+       const savedPatient = await response.json();
+       setPatients(prev => [savedPatient, ...prev]);
+       setActiveTab('patients');
+     } catch (error) {
+       console.error('Error adding patient:', error);
+     }
+   }, []);
+
+   const handleUpdatePatient = useCallback(async (updatedPatient: Patient) => {
+     try {
+       // Extract the numeric ID from the string id like "P-123"
+       const patientIdStr = updatedPatient.id;
+       const numericId = typeof patientIdStr === 'string' ? parseInt(patientIdStr.replace('P-', ''), 10) : patientIdStr;
+       if (!numericId || isNaN(numericId)) {
+         throw new Error('Invalid patient ID');
+       }
+       const response = await fetch(`/api/patients/${numericId}`, {
+         method: 'PUT',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify(updatedPatient),
+       });
+       if (!response.ok) throw new Error('Failed to update patient');
+       const savedPatient = await response.json();
+       setPatients(prev => prev.map(p => p.id === updatedPatient.id ? savedPatient : p));
+       setActiveTab('patients');
+     } catch (error) {
+       console.error('Error updating patient:', error);
+     }
+   }, []);
 
   const handleToggleStaffStatus = async (id: number) => {
     const target = staff.find(s => s.id === id);
@@ -492,6 +549,61 @@ export default function App() {
     }
   };
 
+  const handleAddReason = async (newReason: Reason) => {
+    try {
+      const response = await fetch('/api/reasons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newReason),
+      });
+      if (!response.ok) throw new Error('Failed to add reason');
+      const savedReason = await response.json();
+      setReasons(prev => [...prev, savedReason]);
+    } catch (error) {
+      console.error('Error adding reason:', error);
+    }
+  };
+
+  const handleUpdateReason = async (updatedReason: Reason) => {
+    try {
+      const response = await fetch(`/api/reasons/${updatedReason.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedReason),
+      });
+      if (!response.ok) throw new Error('Failed to update reason');
+      const savedReason = await response.json();
+      setReasons(prev => prev.map(r => r.id === savedReason.id ? savedReason : r));
+    } catch (error) {
+      console.error('Error updating reason:', error);
+    }
+  };
+
+  const handleDeleteReason = async (id: number) => {
+    try {
+      const response = await fetch(`/api/reasons/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('Failed to delete reason');
+      setReasons(prev => prev.filter(r => r.id !== id));
+    } catch (error) {
+      console.error('Error deleting reason:', error);
+    }
+  };
+
+   const handleToggleReason = (id: number) => {
+    const reason = reasons.find(r => r.id === id);
+    if (reason) {
+      handleUpdateReason({ ...reason, isActive: !reason.isActive });
+    }
+  };
+
+  const handleAddAppointment = (newAppointment: any) => {
+    setAppointments(prev => [newAppointment, ...prev]);
+  };
+
+  const handleUpdateAppointment = (updatedAppointment: any) => {
+    setAppointments(prev => prev.map(apt => apt.id === updatedAppointment.id ? updatedAppointment : apt));
+  };
+
   const handleUpdateSchedule = (id: string, assignedShifts: StaffType['assignedShifts'], availability: string, opdWindow: string) => {
     setStaff(staff.map(s => s.id === id ? { ...s, assignedShifts, availability, opdWindow } : s));
   };
@@ -513,10 +625,10 @@ export default function App() {
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'dashboard': return <Dashboard patients={patients} onNavigate={setActiveTab} />;
-      case 'patients': return <Patients patients={filteredPatients} />;
+      case 'dashboard': return <Dashboard patients={patients} appointments={appointments} onNavigate={setActiveTab} />;
+      case 'patients': return <Patients patients={filteredPatients} onUpdatePatient={handleUpdatePatient} states={states} />;
       case 'beds': return <Beds />;
-      case 'appointments': return <Appointments />;
+      case 'appointments': return <Appointments appointments={appointments} onAddAppointment={handleAddAppointment} onUpdateAppointment={handleUpdateAppointment} reasons={reasons} departments={departments} doctors={staff} />;
       case 'pharmacy': return <Pharmacy />;
       case 'billing': return <Billing />;
       case 'departments': return <Departments departments={departments} onOpenModal={() => setIsDeptModalOpen(true)} />;
@@ -525,7 +637,7 @@ export default function App() {
       case 'reports': return <Reports />;
       case 'configuration': return (
         <Configuration 
-          departments={departments} roles={roles} tenants={tenants} qualifications={qualifications} availabilities={availabilities} shifts={shifts} states={states}
+          departments={departments} roles={roles} tenants={tenants} qualifications={qualifications} availabilities={availabilities} shifts={shifts} states={states} reasons={reasons}
           onAddDepartment={handleAddDepartment} onUpdateDepartment={handleUpdateDepartment} onDeleteDepartment={handleDeleteDepartment} onToggleDepartment={handleToggleDepartment}
           onAddRole={handleAddRole} onUpdateRole={handleUpdateRole} onDeleteRole={handleDeleteRole} onToggleRole={handleToggleRole}
           onAddTenant={handleAddTenant} onUpdateTenant={handleUpdateTenant} onDeleteTenant={handleDeleteTenant} onToggleTenant={handleToggleTenant}
@@ -533,6 +645,7 @@ export default function App() {
           onAddAvailability={handleAddAvailability} onUpdateAvailability={handleUpdateAvailability} onDeleteAvailability={handleDeleteAvailability} onToggleAvailability={handleToggleAvailability}
           onAddShift={handleAddShift} onUpdateShift={handleUpdateShift} onDeleteShift={handleDeleteShift} onToggleShift={handleToggleShift}
           onAddState={handleAddState} onUpdateState={handleUpdateState} onDeleteState={handleDeleteState} onToggleState={handleToggleState}
+          onAddReason={handleAddReason} onUpdateReason={handleUpdateReason} onDeleteReason={handleDeleteReason} onToggleReason={handleToggleReason}
         />
       );
       default: return <Dashboard patients={patients} onNavigate={setActiveTab} />;
@@ -573,6 +686,7 @@ export default function App() {
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)} 
         onSave={handleSavePatient} 
+        states={states}
       />
       <NewDoctorModal
         isOpen={isDoctorModalOpen}

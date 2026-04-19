@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
@@ -13,11 +14,13 @@ const rolesRoutes = require('./routes/roles');
 const availabilitiesRoutes = require('./routes/availabilities');
 const shiftsRoutes = require('./routes/shifts');
 const statesRoutes = require('./routes/states');
+const reasonsRoutes = require('./routes/reasons');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 
@@ -37,6 +40,7 @@ app.use('/api/roles', rolesRoutes);
 app.use('/api/availabilities', availabilitiesRoutes);
 app.use('/api/shifts', shiftsRoutes);
 app.use('/api/states', statesRoutes);
+app.use('/api/reasons', reasonsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

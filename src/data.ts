@@ -1,15 +1,6 @@
 import { Patient, Medication, Appointment, Invoice, Staff, Department, Role, Tenant, Qualification, Availability, Shift } from './types';
 
-export const initialPatients: Patient[] = [
-  {id:'P-4521',name:'Priya Sharma',age:42,gender:'F',ward:'ICU',doctor:'Dr. Mehta',diagnosis:'Cardiac arrest',blood:'O+',status:'critical',date:'Apr 4, 2026'},
-  {id:'P-4520',name:'Rajan Nair',age:67,gender:'M',ward:'General B',doctor:'Dr. Iyer',diagnosis:'Hypertension',blood:'B+',status:'stable',date:'Apr 3, 2026'},
-  {id:'P-4519',name:'Ananya Reddy',age:35,gender:'F',ward:'Neurology',doctor:'Dr. Kapoor',diagnosis:'Migraine cluster',blood:'A+',status:'admitted',date:'Apr 3, 2026'},
-  {id:'P-4518',name:'Mohammed Ali',age:55,gender:'M',ward:'Orthopedics',doctor:'Dr. Singh',diagnosis:'Hip replacement',blood:'AB+',status:'discharged',date:'Apr 2, 2026'},
-  {id:'P-4517',name:'Kavitha Menon',age:28,gender:'F',ward:'OB/GYN',doctor:'Dr. Verma',diagnosis:'Prenatal care',blood:'O-',status:'scheduled',date:'Apr 5, 2026'},
-  {id:'P-4516',name:'Sunita Rao',age:61,gender:'F',ward:'Cardiology',doctor:'Dr. Mehta',diagnosis:'Arrhythmia',blood:'A-',status:'admitted',date:'Apr 1, 2026'},
-  {id:'P-4515',name:'Arjun Pillai',age:44,gender:'M',ward:'General A',doctor:'Dr. Singh',diagnosis:'Post appendectomy',blood:'B-',status:'stable',date:'Mar 31, 2026'},
-  {id:'P-4514',name:'Deepa Thomas',age:31,gender:'F',ward:'OB/GYN',doctor:'Dr. Verma',diagnosis:'32 weeks pregnancy',blood:'A+',status:'admitted',date:'Mar 30, 2026'},
-];
+export const initialPatients: Patient[] = [];
 
 export const meds: Medication[] = [
   {name:'Paracetamol 500mg',cat:'Analgesic',qty:12,max:200,low:true},

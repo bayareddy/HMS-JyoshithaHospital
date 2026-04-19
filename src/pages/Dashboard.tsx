@@ -5,11 +5,16 @@ import { Badge } from '../components/Badge';
 
 interface DashboardProps {
   patients: Patient[];
+  appointments: any[];
   onNavigate: (tab: string) => void;
 }
 
-export function Dashboard({ patients, onNavigate }: DashboardProps) {
+export function Dashboard({ patients, appointments, onNavigate }: DashboardProps) {
   const recentPatients = patients.slice(0, 5);
+  
+  const today = new Date().toLocaleDateString('en-CA');
+  const todaysAppointments = appointments.filter(apt => apt.date === today);
+  const appointmentCount = todaysAppointments.length;
 
   return (
     <div className="space-y-4">
@@ -20,8 +25,8 @@ export function Dashboard({ patients, onNavigate }: DashboardProps) {
             <Users className="w-[17px] h-[17px]" />
           </div>
           <div className="text-[11px] text-gray-500 mb-1">Total Patients</div>
-          <div className="text-[24px] font-medium leading-none">1,284</div>
-          <div className="text-[11px] text-gray-500 mt-1"><span className="text-accent">+12%</span> vs last month</div>
+          <div className="text-[24px] font-medium leading-none">{patients.length}</div>
+          <div className="text-[11px] text-gray-500 mt-1">registered patients</div>
         </div>
         <div className="bg-surface border border-border-subtle rounded-xl p-4">
           <div className="w-[34px] h-[34px] rounded-lg flex items-center justify-center mb-3 bg-[#E6F1FB] text-[#378ADD]">
@@ -36,8 +41,8 @@ export function Dashboard({ patients, onNavigate }: DashboardProps) {
             <Calendar className="w-[17px] h-[17px]" />
           </div>
           <div className="text-[11px] text-gray-500 mb-1">Today's Appointments</div>
-          <div className="text-[24px] font-medium leading-none">47</div>
-          <div className="text-[11px] text-gray-500 mt-1"><span className="text-accent">+5</span> emergency additions</div>
+          <div className="text-[24px] font-medium leading-none">{appointmentCount}</div>
+          <div className="text-[11px] text-gray-500 mt-1">appointments scheduled</div>
         </div>
         <div className="bg-surface border border-border-subtle rounded-xl p-4">
           <div className="w-[34px] h-[34px] rounded-lg flex items-center justify-center mb-3 bg-[#FCEBEB] text-[#E24B4A]">
@@ -91,23 +96,24 @@ export function Dashboard({ patients, onNavigate }: DashboardProps) {
             <button onClick={() => onNavigate('appointments')} className="text-[11px] text-accent hover:underline">Schedule →</button>
           </div>
           <div className="flex-1 overflow-y-auto">
-            {[
-              { time: '9:00', name: 'Sunita Rao', type: 'Cardio checkup', dr: 'Dr. Mehta' },
-              { time: '9:30', name: 'Arjun Pillai', type: 'Post-op review', dr: 'Dr. Singh' },
-              { time: '10:00', name: 'Leela Krishnan', type: 'MRI consultation', dr: 'Dr. Kapoor' },
-              { time: '10:45', name: 'Farhan Sheikh', type: 'Diabetes follow-up', dr: 'Dr. Iyer' },
-              { time: '11:30', name: 'Deepa Thomas', type: 'Prenatal checkup', dr: 'Dr. Verma' },
-              { time: '14:00', name: 'Suresh Kumar', type: 'General consultation', dr: 'Dr. Iyer' },
-            ].map((apt, i) => (
-              <div key={i} className="flex items-center gap-3 py-2.5 px-4 border-b border-border-subtle last:border-0 hover:bg-surface2 cursor-pointer">
-                <div className="text-[11px] font-semibold text-accent min-w-[42px]">{apt.time}</div>
-                <div>
-                  <div className="text-[12px] font-medium">{apt.name}</div>
-                  <div className="text-[10px] text-gray-500">{apt.type}</div>
-                </div>
-                <div className="text-[10px] text-gray-500 ml-auto text-right">{apt.dr}</div>
+            {todaysAppointments.length > 0 ? (
+              todaysAppointments
+                .sort((a, b) => a.time.localeCompare(b.time))
+                .map((apt, i) => (
+                  <div key={i} className="flex items-center gap-3 py-2.5 px-4 border-b border-border-subtle last:border-0 hover:bg-surface2 cursor-pointer">
+                    <div className="text-[11px] font-semibold text-accent min-w-[42px]">{apt.time}</div>
+                    <div>
+                      <div className="text-[12px] font-medium">{apt.patient}</div>
+                      <div className="text-[10px] text-gray-500">{apt.type || apt.reason}</div>
+                    </div>
+                    <div className="text-[10px] text-gray-500 ml-auto text-right">{apt.doctor}</div>
+                  </div>
+                ))
+            ) : (
+              <div className="py-8 text-center text-gray-500 text-[12px]">
+                No appointments today
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>

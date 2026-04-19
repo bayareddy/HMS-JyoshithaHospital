@@ -6,7 +6,7 @@
 -- ==========================================
 
 CREATE TABLE tenants (
-    id VARCHAR(50) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     location VARCHAR(255),
     is_active BOOLEAN DEFAULT TRUE,
@@ -14,44 +14,59 @@ CREATE TABLE tenants (
 );
 
 CREATE TABLE departments (
-    id VARCHAR(50) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    head_id VARCHAR(50), -- Foreign key added later to avoid circular dependency
+    head VARCHAR(255),
     description TEXT,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE roles (
-    id VARCHAR(50) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     is_active BOOLEAN DEFAULT TRUE
 );
 
+CREATE TABLE states (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    state_code VARCHAR(10),
+    is_active BOOLEAN DEFAULT TRUE
+);
+
 CREATE TABLE qualifications (
-    id VARCHAR(50) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     is_active BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE availabilities (
-    id VARCHAR(50) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     description TEXT,
     is_active BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE shifts (
-    id VARCHAR(50) PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE
 );
 
+CREATE TABLE reasons (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Mapping table for the days a base shift applies to (if needed globally)
 CREATE TABLE shift_days (
-    shift_id VARCHAR(50) NOT NULL,
+    shift_id INT NOT NULL,
     day_of_week ENUM('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday') NOT NULL,
     PRIMARY KEY (shift_id, day_of_week),
     FOREIGN KEY (shift_id) REFERENCES shifts(id) ON DELETE CASCADE
@@ -65,13 +80,13 @@ CREATE TABLE shift_days (
 CREATE TABLE staff (
     id VARCHAR(50) PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    role_id VARCHAR(50) NOT NULL,
-    department_id VARCHAR(50) NOT NULL,
+    role_id INT NOT NULL,
+    department_id INT NOT NULL,
     phone VARCHAR(50),
     status ENUM('admitted', 'scheduled') DEFAULT 'admitted',
     opd_window VARCHAR(50), -- e.g., '15 min'
-    tenant_id VARCHAR(50) NOT NULL,
-    availability_id VARCHAR(50) NOT NULL,
+    tenant_id INT NOT NULL,
+    availability_id INT NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (role_id) REFERENCES roles(id),
@@ -87,7 +102,7 @@ ADD FOREIGN KEY (head_id) REFERENCES staff(id) ON DELETE SET NULL;
 -- Staff Qualifications (Many-to-Many)
 CREATE TABLE staff_qualifications (
     staff_id VARCHAR(50) NOT NULL,
-    qualification_id VARCHAR(50) NOT NULL,
+    qualification_id INT NOT NULL,
     PRIMARY KEY (staff_id, qualification_id),
     FOREIGN KEY (staff_id) REFERENCES staff(id) ON DELETE CASCADE,
     FOREIGN KEY (qualification_id) REFERENCES qualifications(id) ON DELETE CASCADE
@@ -120,7 +135,7 @@ CREATE TABLE staff_shift_assignment_days (
 -- Shifts linked to a specific staff shift assignment
 CREATE TABLE staff_shift_assignment_shifts (
     assignment_id VARCHAR(50) NOT NULL,
-    shift_id VARCHAR(50) NOT NULL,
+    shift_id INT NOT NULL,
     PRIMARY KEY (assignment_id, shift_id),
     FOREIGN KEY (assignment_id) REFERENCES staff_shift_assignments(id) ON DELETE CASCADE,
     FOREIGN KEY (shift_id) REFERENCES shifts(id) ON DELETE CASCADE
@@ -147,17 +162,20 @@ CREATE TABLE patients (
 );
 
 CREATE TABLE appointments (
-    id VARCHAR(50) PRIMARY KEY,
+    id INT NOT NULL AUTO_INCREMENT,
     appointment_time DATETIME NOT NULL,
     patient_id VARCHAR(50) NOT NULL,
-    doctor_id VARCHAR(50) NOT NULL,
-    type VARCHAR(100),
-    department_id VARCHAR(50) NOT NULL,
-    status ENUM('admitted', 'stable', 'scheduled') DEFAULT 'scheduled',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE,
-    FOREIGN KEY (doctor_id) REFERENCES staff(id) ON DELETE CASCADE,
-    FOREIGN KEY (department_id) REFERENCES departments(id)
+    doctor_id INT(5) NOT NULL,
+    type VARCHAR(100) DEFAULT NULL,
+    status ENUM('admitted','stable','scheduled') DEFAULT 'scheduled',
+    created_at TIMESTAMP NULL DEFAULT current_timestamp(),
+    p_name VARCHAR(60) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `idx_appointments_time` (`appointment_time`),
+    KEY `idx_appointments_doctor` (`doctor_id`),
+    KEY `idx_appointments_patient` (`patient_id`),
+    FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (doctor_id) REFERENCES staff(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE medications (
@@ -178,7 +196,7 @@ CREATE TABLE medications (
 CREATE TABLE invoices (
     id VARCHAR(50) PRIMARY KEY,
     patient_id VARCHAR(50) NOT NULL,
-    department_id VARCHAR(50),
+    department_id INT,
     services TEXT, -- Could be normalized into an invoice_line_items table
     amount DECIMAL(10, 2) NOT NULL,
     insurance_details VARCHAR(255),
@@ -218,3 +236,45 @@ CREATE INDEX idx_invoices_due_date ON invoices(due_date);
 -- Medication Indexes
 CREATE INDEX idx_medications_category ON medications(category);
 CREATE INDEX idx_medications_low_stock ON medications(is_low_stock);
+
+-- ==========================================
+-- 6. Indian States Data
+-- ==========================================
+
+INSERT INTO states (name, state_code) VALUES 
+('Andhra Pradesh', 'AP'),
+('Arunachal Pradesh', 'AR'),
+('Assam', 'AS'),
+('Bihar', 'BR'),
+('Chhattisgarh', 'CG'),
+('Goa', 'GA'),
+('Gujarat', 'GJ'),
+('Haryana', 'HR'),
+('Himachal Pradesh', 'HP'),
+('Jharkhand', 'JH'),
+('Karnataka', 'KA'),
+('Kerala', 'KL'),
+('Madhya Pradesh', 'MP'),
+('Maharashtra', 'MH'),
+('Manipur', 'MN'),
+('Meghalaya', 'ML'),
+('Mizoram', 'MZ'),
+('Nagaland', 'NL'),
+('Odisha', 'OD'),
+('Punjab', 'PB'),
+('Rajasthan', 'RJ'),
+('Sikkim', 'SK'),
+('Tamil Nadu', 'TN'),
+('Telangana', 'TS'),
+('Tripura', 'TR'),
+('Uttar Pradesh', 'UP'),
+('Uttarakhand', 'UK'),
+('West Bengal', 'WB'),
+('Delhi', 'DL'),
+('Jammu and Kashmir', 'JK'),
+('Ladakh', 'LA'),
+('Puducherry', 'PY'),
+('Chandigarh', 'CH'),
+('Andaman and Nicobar Islands', 'AN'),
+('Dadra and Nagar Haveli and Daman and Diu', 'DN'),
+('Lakshadweep', 'LD');
