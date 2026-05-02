@@ -15,6 +15,7 @@ const availabilitiesRoutes = require('./routes/availabilities');
 const shiftsRoutes = require('./routes/shifts');
 const statesRoutes = require('./routes/states');
 const reasonsRoutes = require('./routes/reasons');
+const tasksRoutes = require('./routes/tasks');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -41,6 +42,9 @@ app.use('/api/availabilities', availabilitiesRoutes);
 app.use('/api/shifts', shiftsRoutes);
 app.use('/api/states', statesRoutes);
 app.use('/api/reasons', reasonsRoutes);
+app.use('/api/tasks', tasksRoutes);
+app.use('/api/scheduleTemplates', require('./routes/scheduleTemplates'));
+app.use('/api/timeOff', require('./routes/timeOff'));
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -85,11 +85,31 @@ export interface Availability {
   isActive?: boolean;
 }
 
-export interface Shift {
-  id: string;
+export interface Task {
+  id: number;
   name: string;
-  days: string[];
+  description?: string;
   isActive?: boolean;
+}
+
+export interface ScheduleTemplate {
+  id: number;
+  name: string;
+  opdSlotTime: number;
+  schedule: DaySchedule[];
+  isActive?: boolean;
+}
+
+export interface DaySchedule {
+  day: string;
+  tasks: ScheduleTask[];
+}
+
+export interface ScheduleTask {
+  id: number;
+  taskName: string;
+  fromTime: string;
+  toTime: string;
 }
 
 export interface Reason {
@@ -112,6 +132,17 @@ export interface StaffShiftAssignment {
   shifts: string[];
 }
 
+export interface TimeOffRequest {
+  id: number;
+  staffId: number;
+  staffName: string;
+  startDateTime: string;
+  endDateTime: string;
+  reason: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
+}
+
 export interface Staff {
   id: number;
   name: string;
@@ -128,5 +159,8 @@ export interface Staff {
   hospital: string;
   tenant?: number;
   tenantId?: number;
+  scheduleTemplateId?: number;
+  scheduleTemplate?: string;
   isActive: boolean;
+  availability?: string;
 }
